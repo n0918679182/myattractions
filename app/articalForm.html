@@ -1,0 +1,85 @@
+---
+title: 景點收藏後台
+layout: ./app/backstagelayout.ejs
+engine: ejs
+current: index
+---
+
+<div class="container">
+    <div class="row justify-content-center pb-5">
+        <div class="col-10">
+            <h1 class="mb-5 fw-bold" id="formTitle">新增資料</h1>
+            <div class="d-flex flex-column">
+                <input class=" mb-4" type="text" placeholder="標題" id="title">
+                <textarea class=" mb-4" type="text" placeholder="景點內容" id="body"></textarea>
+                <input class=" mb-4" type="text" placeholder="圖片網址" id="imgUrl">
+                <div class="text-center">
+                    <button class="btn btn-primary" onclick="addArtical()" id="addArticalBT">新增</button>
+                    <button class="btn btn-primary d-none" onclick="updateArtical()" id="updateArticalBT">編輯</button>
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.1.3/axios.min.js"></script>
+<script>
+    const title = document.getElementById('title');
+    const body = document.getElementById('body');
+    const imgUrl = document.getElementById('imgUrl');
+
+    articalFormInit();
+    function articalFormInit(){
+        let articalId = location.href.split('?id=')[1];
+        const formTitle = document.getElementById('formTitle');
+        const addArticalBT = document.getElementById('addArticalBT');
+        const updateArticalBT = document.getElementById('updateArticalBT');
+
+        if(articalId != undefined){
+            console.log(articalId)
+            formTitle.textContent = '編輯資料'
+            addArticalBT.classList.add('d-none');
+            updateArticalBT.classList.remove('d-none');
+            axios.get('http://localhost:3000/sightseeing/'+articalId).then(resp=>{
+                let theArtical = resp.data;
+                console.log(theArtical.title)
+                title.value = theArtical.title;
+                body.value = theArtical.body;
+                imgUrl.value = theArtical.imgUrl;
+            })
+        }
+    }
+
+    function addArtical(){
+        axios.post('http://localhost:3000/sightseeing',{
+            "title": title.value,
+            "body":body.value,
+            "imgUrl":imgUrl.value
+        }).then(resp=>{
+            alert('新增成功!');
+            cleanInput();
+        })
+    }
+
+    function cleanInput(){
+        title.value='';
+        body.value='';
+        imgUrl.value='';
+    }
+
+    function updateArtical(){
+        let articalId = location.href.split('?id=')[1];
+        axios.put('http://localhost:3000/sightseeing/'+articalId,{
+            "title": title.value,
+            "body":body.value,
+            "imgUrl":imgUrl.value
+        }).then(resp=>{
+            location.href = 'backstage.html'
+        })
+    }
+</script>

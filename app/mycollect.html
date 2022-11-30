@@ -1,0 +1,69 @@
+---
+title: 景點收藏
+layout: ./app/layout.ejs
+engine: ejs
+current: index
+---
+
+<div class="container">
+    <h2 class="fw-bolder mb-4">收藏列表</h2>
+    <div class="row" id="myCollectArea">
+
+        <!-- <div class="col-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="w-100 text-end mb-3">
+                        <button id="mycollect_cancelCollectBT" class="btn btn-secondary" onclick="cancelMyCollect()">已收藏</button>
+                    </div>
+                    <h3 class="card-title mb-3">標題</h3>
+                    <p class="card-text">內文</p>
+                </div>
+            </div>
+        </div> -->
+
+    </div>
+</div>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.1.3/axios.min.js"></script>
+<script>
+    const userId = localStorage.getItem('userId');
+    myCollectInit();
+    function myCollectInit() {
+        const myCollectArea = document.getElementById('myCollectArea');
+        let temp = '';
+        Promise.all([axios.get('http://localhost:3000/collects?userId=' + userId), axios.get('http://localhost:3000/sightseeing')]).then(resp => {
+            const theCollect = resp[0].data;
+            const articals = resp[1].data;
+            theCollect.forEach(c => {
+                let thaArtical = articals.filter(artical=>artical.id == c.sightseeingId)[0];
+                temp +=
+                `<div class="col-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="w-100 text-end mb-3">
+                                <button id="mycollect_cancelCollectBT" class="btn btn-secondary" onclick="cancelMyCollect(${c.id})">已收藏</button>
+                            </div>
+                            <h3 class="card-title mb-3">${thaArtical.title}</h3>
+                            <p class="card-text">${thaArtical.body}</p>
+                        </div>
+                    </div>
+                </div>`;
+            })
+            myCollectArea.innerHTML = temp;
+        })
+
+    }
+
+    function cancelMyCollect(id){
+        axios.delete('http://localhost:3000/collects/'+id).then(resp=>{
+            myCollectInit();
+        })
+    }
+
+
+
+</script>
