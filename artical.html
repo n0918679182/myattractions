@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>
+    景點收藏
+  </title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css" />
+  <link rel="stylesheet" href="./assets/style/all.css">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light p-3 mb-5">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">LOGO</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item me-4">
+            <a class="nav-link active" aria-current="page" href="signin.html" id="signinBT">登入</a>
+          </li>
+          <li class="nav-item me-4">
+            <a class="btn btn-primary" href="signup.html" id="signupBT">免費註冊</a>
+          </li>
+          <li class="nav-item me-4" id="backstageLi">
+
+          </li>
+          <li class="nav-item me-4">
+            <a class="nav-link  d-none" href="mycollect.html" id="collectBT">收藏列表</a>
+          </li>
+          <li class="nav-item me-4">
+            <a class="nav-link  d-none" href="#" id="menuBT">Hello!</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link  d-none" href="#" id="signoutBT" onclick="signout()">登出</a>
+          </li>
+
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  
+<div class="container">
+    <h2 class="fw-bolder mb-4">單筆內文</h2>
+    <p id="alreadyCollect" class="d-none">未收藏</p>
+    <button id="addCollectBT" class="btn btn-outline-primary mb-5 d-none" onclick="addCollect()">加入收藏</button>
+    <button id="cancelCollectBT" class="btn btn-outline-primary mb-5 d-none" onclick="cancelCollect()">取消收藏</button>
+    <div id="articalArea">
+
+
+    </div>
+</div>
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/validate.js/0.13.1/validate.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.1.3/axios.min.js"></script>
+<script>
+    const url = location.href;
+    let articalNum = url.split('id=')[1];
+    const permissions = localStorage.getItem('permissions');
+    const userId = localStorage.getItem('userId');
+
+    articalInit();
+    function articalInit() {
+        const articalArea = document.getElementById('articalArea');
+        axios.get('http://localhost:3000/sightseeing?id=' + articalNum).then(resp => {
+            articalArea.innerHTML = JSON.stringify(resp.data[0]);
+        })
+
+        haveCollect();
+    }
+
+
+    function haveCollect() {
+        const alreadyCollect = document.getElementById('alreadyCollect');
+        const addCollectBT = document.getElementById('addCollectBT');
+        const cancelCollectBT = document.getElementById('cancelCollectBT');
+
+        if (permissions != null) {
+            alreadyCollect.classList.remove('d-none');
+            addCollectBT.classList.remove('d-none');
+            cancelCollectBT.classList.add('d-none');
+            alreadyCollect.textContent = '未收藏';
+            axios.get('http://localhost:3000/collects').then(resp => {
+                resp.data.forEach(o => {
+                    if (o.userId == userId && o.sightseeingId == articalNum) {
+                        alreadyCollect.textContent = '已收藏';
+                        cancelCollectBT.classList.remove('d-none');
+                        addCollectBT.classList.add('d-none');
+                    } 
+                })
+            })
+        } else {
+            alreadyCollect.classList.add('d-none');
+            addCollectBT.classList.add('d-none');
+            cancelCollectBT.classList.add('d-none');
+        }
+
+
+    }
+
+    function addCollect() {
+        let data = {
+            "userId": userId,
+            "sightseeingId": articalNum
+        }
+        axios.post('http://localhost:3000/collects', data).then(resp => {
+            haveCollect();
+        })
+    }
+
+    function cancelCollect() {
+        axios.get('http://localhost:3000/collects').then(r => {
+            let thisArtical = r.data.filter(o => {
+                if (o.userId == userId && o.sightseeingId == articalNum) {
+                    return true;
+                }
+            })[0]
+            console.log(thisArtical.id)
+            axios.delete('http://localhost:3000/collects/' + thisArtical.id).then(resp => {
+                haveCollect();
+            })
+        })
+    }
+</script>
+
+
+    <script src="./assets/js/vendors.js"></script>
+    <script src="./assets/js/all.js"></script>
+    <script>
+      layoutInit()
+      function layoutInit() {
+        const userId = localStorage.getItem('userId');
+        const permissions = localStorage.getItem('permissions');
+        const userName = localStorage.getItem('userName')
+
+        const signinBT = document.getElementById('signinBT');
+        const signupBT = document.getElementById('signupBT');
+        const collectBT = document.getElementById('collectBT');
+        const menuBT = document.getElementById('menuBT');
+        const signoutBT = document.getElementById('signoutBT');
+
+        if(permissions != null){
+          signinBT.classList.add('d-none');
+          signupBT.classList.add('d-none');
+          collectBT.classList.remove('d-none');
+          menuBT.classList.remove('d-none');
+          signoutBT.classList.remove('d-none');
+          menuBT.textContent = 'Hello '+userName;
+        } 
+
+        if(permissions == 'admin'){
+          const backstageLi = document.getElementById('backstageLi');
+          backstageLi.innerHTML = `<a class="nav-link" href="backstage.html">後台管理</a>`
+        }
+
+      }
+
+      function signout(){
+        localStorage.removeItem('userId');
+        localStorage.removeItem('permissions');
+        localStorage.removeItem('userName');
+        location.href = 'index.html'
+      }
+
+
+    </script>
+</body>
+
+</html>
