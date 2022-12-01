@@ -77,7 +77,7 @@
     function myCollectInit() {
         const myCollectArea = document.getElementById('myCollectArea');
         let temp = '';
-        Promise.all([axios.get('http://localhost:3000/collects?userId=' + userId), axios.get('http://localhost:3000/sightseeing')]).then(resp => {
+        Promise.all([axios.get('https://myattractions-db.vercel.app/collects?userId=' + userId), axios.get('https://myattractions-db.vercel.app/sightseeing')]).then(resp => {
             const theCollect = resp[0].data;
             const articals = resp[1].data;
             theCollect.forEach(c => {
@@ -101,7 +101,7 @@
     }
 
     function cancelMyCollect(id){
-        axios.delete('http://localhost:3000/collects/'+id).then(resp=>{
+        axios.delete('https://myattractions-db.vercel.app/collects/'+id).then(resp=>{
             myCollectInit();
         })
     }

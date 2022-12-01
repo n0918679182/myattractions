@@ -73,7 +73,7 @@
     function backstageInit() {
         const articalListArea = document.getElementById('articalListArea');
         let temp = '';
-        axios.get('http://localhost:3000/sightseeing').then(resp => {
+        axios.get('https://myattractions-db.vercel.app/sightseeing').then(resp => {
             resp.data.forEach(o => {
                 temp += `
                     <tr>
@@ -94,7 +94,7 @@
     }
 
     function deleteArtical(id){
-        axios.delete('http://localhost:3000/sightseeing/'+id).then(resp=>{
+        axios.delete('https://myattractions-db.vercel.app/sightseeing/'+id).then(resp=>{
             backstageInit();
         })
     }

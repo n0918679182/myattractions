@@ -78,7 +78,7 @@
   function collectInit() {
     const collectArea = document.getElementById('collectArea');
     let temp = '';
-    axios.get('http://localhost:3000/sightseeing').then(resp => {
+    axios.get('https://myattractions-db.vercel.app/sightseeing').then(resp => {
       console.log(resp.data)
       resp.data.forEach(o => {
         temp += `

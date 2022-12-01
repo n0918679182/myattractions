@@ -85,23 +85,26 @@
     const mail = document.getElementById('mail');
     const pwd = document.getElementById('pwd');
     const name = document.getElementById('name');
+    let mailValidErr = false;
 
-    function mailValid() {
+    async function mailValid() {
+        mailValidErr = false;
         const mailErr = document.getElementById('mailErr');
         mailErr.textContent = ''
         if (!mail.value) {
             mailErr.textContent = '請勿空白'
-            return true;
+            mailValidErr = true;
         } else {
-            axios.get('http://localhost:3000/user').then(resp => {
-                resp.data.forEach(o => {
-                    if (o.account == mail.value) {
-                        mailErr.textContent = '信箱已經註冊，請直接登入或使用其他信箱'
-                        return true;
-                    }
-                })
+            await axios.get('https://myattractions-db.vercel.app/user').then(resp => {
+                    resp.data.forEach(o => {
+                        if (o.account == mail.value) {
+                            mailErr.textContent = '信箱已經註冊，請直接登入或使用其他信箱'
+                            mailValidErr = true;
+                        }
+                    })
             })
         }
+        
     }
 
     function pwdValid(){
@@ -122,11 +125,12 @@
         }
     }
 
-    function signup() {
-        if(mailValid() || pwdValid() || nameValid()){
+    async function signup() {
+        await mailValid();
+        if(mailValidErr|| pwdValid() || nameValid()){
             alert('表單輸入錯誤');
         }else{
-            axios.post('http://localhost:3000/user',{
+            axios.post('https://myattractions-db.vercel.app/user',{
                 "account":mail.value,
                 "pwd":pwd.value,
                 "name":name.value

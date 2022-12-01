@@ -74,7 +74,7 @@
     function signin(){
         const mail = document.getElementById('mail').value;
         const pwd = document.getElementById('pwd').value;
-        axios.get('http://localhost:3000/user').then(resp=>{
+        axios.get('https://myattractions-db.vercel.app/user').then(resp=>{
             resp.data.forEach(o=>{
                 if(o.account === mail){
                     if(o.pwd === pwd){
