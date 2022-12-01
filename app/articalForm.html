@@ -45,7 +45,7 @@ current: index
             formTitle.textContent = '編輯資料'
             addArticalBT.classList.add('d-none');
             updateArticalBT.classList.remove('d-none');
-            axios.get('http://localhost:3000/sightseeing/'+articalId).then(resp=>{
+            axios.get('https://myattractions-db.vercel.app/sightseeing/'+articalId).then(resp=>{
                 let theArtical = resp.data;
                 console.log(theArtical.title)
                 title.value = theArtical.title;
@@ -56,7 +56,7 @@ current: index
     }
 
     function addArtical(){
-        axios.post('http://localhost:3000/sightseeing',{
+        axios.post('https://myattractions-db.vercel.app/sightseeing',{
             "title": title.value,
             "body":body.value,
             "imgUrl":imgUrl.value
@@ -74,7 +74,7 @@ current: index
 
     function updateArtical(){
         let articalId = location.href.split('?id=')[1];
-        axios.put('http://localhost:3000/sightseeing/'+articalId,{
+        axios.put('https://myattractions-db.vercel.app/sightseeing/'+articalId,{
             "title": title.value,
             "body":body.value,
             "imgUrl":imgUrl.value

@@ -30,7 +30,7 @@ current: index
     articalInit();
     function articalInit() {
         const articalArea = document.getElementById('articalArea');
-        axios.get('http://localhost:3000/sightseeing?id=' + articalNum).then(resp => {
+        axios.get('https://myattractions-db.vercel.app/sightseeing?id=' + articalNum).then(resp => {
             articalArea.innerHTML = JSON.stringify(resp.data[0]);
         })
 
@@ -48,7 +48,7 @@ current: index
             addCollectBT.classList.remove('d-none');
             cancelCollectBT.classList.add('d-none');
             alreadyCollect.textContent = '未收藏';
-            axios.get('http://localhost:3000/collects').then(resp => {
+            axios.get('https://myattractions-db.vercel.app/collects').then(resp => {
                 resp.data.forEach(o => {
                     if (o.userId == userId && o.sightseeingId == articalNum) {
                         alreadyCollect.textContent = '已收藏';
@@ -71,20 +71,20 @@ current: index
             "userId": userId,
             "sightseeingId": articalNum
         }
-        axios.post('http://localhost:3000/collects', data).then(resp => {
+        axios.post('https://myattractions-db.vercel.app/collects', data).then(resp => {
             haveCollect();
         })
     }
 
     function cancelCollect() {
-        axios.get('http://localhost:3000/collects').then(r => {
+        axios.get('https://myattractions-db.vercel.app/collects').then(r => {
             let thisArtical = r.data.filter(o => {
                 if (o.userId == userId && o.sightseeingId == articalNum) {
                     return true;
                 }
             })[0]
             console.log(thisArtical.id)
-            axios.delete('http://localhost:3000/collects/' + thisArtical.id).then(resp => {
+            axios.delete('https://myattractions-db.vercel.app/collects/' + thisArtical.id).then(resp => {
                 haveCollect();
             })
         })
